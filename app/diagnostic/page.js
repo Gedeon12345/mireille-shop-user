@@ -1,4 +1,3 @@
-// Page TEMPORAIRE de diagnostic : montre ce que le serveur Vercel reçoit de l'API. À supprimer ensuite.
 export const dynamic = 'force-dynamic'
 
 const raw = (process.env.API_URL || '').trim().replace(/\/+$/, '')
@@ -13,29 +12,14 @@ async function probe(path) {
   }
 }
 
-export default async function Diagnostic({ searchParams }) {
+export default async function Diagnostic() {
+  const id = '6ac6676e80a17b455a63039f'
   const list = await probe('/public/products')
-  let id = Array.isArray(searchParams.id) ? searchParams.id[0] : searchParams.id
-  if (!id) { try { id = JSON.parse(list.body)[0]._id } catch { id = '' } }
-  const detail = id ? await probe(`/public/products/${id}`) : null
-  const shop = await probe('/public/shop')
-
+  const detail = await probe(`/public/products/${id}`)
   const lines = [
-    `API_URL utilisée par le site : ${BASE || '(vide !)'}`,
-    '',
-    `1) Liste des produits : ${list.status}`,
-    list.body.slice(0, 200),
-    '',
-    `2) Boutique : ${shop.status}`,
-    shop.body.slice(0, 200),
-    '',
-    `3) Détail du produit ${id || '(aucun)'} : ${detail ? detail.status : '-'}`,
-    detail ? detail.body.slice(0, 300) : '',
+    `API_URL utilisée : ${BASE || '(vide !)'}`,
+    `1) Liste : ${list.status}`, list.body.slice(0, 150),
+    `2) Détail ${id} : ${detail.status}`, detail.body.slice(0, 300),
   ]
-  return (
-    <div>
-      <h1 className="mb-4 text-xl font-bold">Diagnostic</h1>
-      <pre className="whitespace-pre-wrap break-all rounded-xl border border-line bg-surface p-4 text-xs">{lines.join('\n')}</pre>
-    </div>
-  )
+  return <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-all', padding: 16 }}>{lines.join('\n')}</pre>
 }
