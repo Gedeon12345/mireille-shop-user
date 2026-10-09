@@ -2,11 +2,13 @@ import './globals.css'
 import Link from 'next/link'
 import { Sora, Plus_Jakarta_Sans } from 'next/font/google'
 import { Footprints, MessageCircle, MapPin } from 'lucide-react'
-import { getShop } from '../lib/api'
+import { getShop, SITE_URL } from '../lib/api'
 import { waLink } from '../lib/format'
 
 const display = Sora({ subsets: ['latin'], variable: '--font-display', display: 'swap' })
 const sans = Plus_Jakarta_Sans({ subsets: ['latin'], variable: '--font-sans', display: 'swap' })
+
+const safeUrl = (v) => { try { return new URL(v || 'http://localhost:3000') } catch { return new URL('http://localhost:3000') } }
 
 export const viewport = { width: 'device-width', initialScale: 1, themeColor: '#7C3AED' }
 
@@ -14,7 +16,7 @@ export async function generateMetadata() {
   const shop = await getShop()
   const name = shop?.shopName || 'Boutique'
   return {
-    metadataBase: new URL(process.env.SITE_URL || 'http://localhost:3000'),
+    metadataBase: safeUrl(SITE_URL),
     title: { default: `${name} – Chaussures`, template: `%s | ${name}` },
     description: `Découvrez les chaussures de ${name}. Choisissez votre pointure et commandez facilement sur WhatsApp.`,
     openGraph: { siteName: name, type: 'website', locale: 'fr_FR' },

@@ -2,7 +2,7 @@ import { cache } from 'react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowLeft, Footprints } from 'lucide-react'
-import { getShop, API_BASE } from '../../../lib/api'
+import { getShop, API_BASE, SITE_URL } from '../../../lib/api'
 import { cld, formatFCFA } from '../../../lib/format'
 import OrderPanel from '../../../components/OrderPanel'
 
@@ -45,7 +45,7 @@ export default async function ProductPage({ params, searchParams }) {
     }
     notFound()
   }
-  const site = (process.env.SITE_URL || '').replace(/\/+$/, '')
+  const site = SITE_URL
 
   return (
     <>
