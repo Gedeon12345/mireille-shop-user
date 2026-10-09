@@ -1,3 +1,4 @@
+import { cache } from 'react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowLeft, Footprints } from 'lucide-react'
@@ -7,8 +8,11 @@ import OrderPanel from '../../../components/OrderPanel'
 
 export const maxDuration = 60
 
+// Une seule demande à l'API par affichage (métadonnées + page), toujours à jour
+const getProduct = cache((id) => getJson(`/public/products/${id}`, { fresh: true }))
+
 export async function generateMetadata({ params }) {
-  const p = await getJson(`/public/products/${params.id}`).catch(() => null)
+  const p = await getProduct(params.id).catch(() => null)
   if (!p) return { title: 'Produit introuvable' }
   const description = `${p.name} – ${formatFCFA(p.price)}. Commandez sur WhatsApp : retrait en boutique ou livraison.`
   const image = cld(p.image, 900)
@@ -21,7 +25,7 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function ProductPage({ params }) {
-  const [p, shop] = await Promise.all([getJson(`/public/products/${params.id}`), getShop()])
+  const [p, shop] = await Promise.all([getProduct(params.id), getShop()])
   if (!p) notFound()
   const site = (process.env.SITE_URL || '').replace(/\/+$/, '')
 
